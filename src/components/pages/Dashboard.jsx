@@ -1,6 +1,6 @@
 import { useAuth } from "../context/AuthContext";
-import DriverDashboard from "./DriverDashboard";
-import AdminDashboard from "./AdminDashboard";
+import {DriverDashboard} from "./DriverDashboard";
+import {AdminDashboard} from "./AdminDashboard";
 import { Loader2 } from "lucide-react";
 
 
@@ -20,7 +20,7 @@ export default function Dashboard() {
 
   // 3. Le Switch selon le rôle
   if (user.role === 'admin') {
-    return <AdminDashboard />;
+    return <AdminDashoboeard/>
   } else {
     return <DriverDashboard />;
   }

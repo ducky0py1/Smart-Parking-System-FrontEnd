@@ -1,4 +1,4 @@
-import { useAuth } from "../components/context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { Wallet, LogOut, Car } from "lucide-react";
 
 export default function Navbar() {
@@ -9,7 +9,7 @@ export default function Navbar() {
       <div className="container mx-auto flex justify-between items-center">
         
         {/* Logo à gauche */}
-        <div className="flex items-center gap-2 text-xl  text-blue-600">
+        <div className="flex items-center gap-2 text-xl font-bold text-blue-600">
           <Car size={28} />
           <span>SmartPark</span>
         </div>

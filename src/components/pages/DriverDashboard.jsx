@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import ParkingSpot from "../components/ParkingSpot";
+import ParkingSpot from "../ParkingSpot";
 import { Loader2 } from "lucide-react";
 
 export default function DriverDashboard() {

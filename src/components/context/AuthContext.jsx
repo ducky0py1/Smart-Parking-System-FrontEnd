@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { BrowserProvider } from "ethers"; // Nouvelle syntaxe ethers v6
 import api from "../services/api";
 
-const AuthContext = createContext({
+export const AuthContext = createContext({
   user: null,
   token: null,
   login: async () => {},
