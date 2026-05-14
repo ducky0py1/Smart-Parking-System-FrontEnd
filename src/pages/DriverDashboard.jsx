@@ -12,92 +12,73 @@ import { toast } from '../components/ui/Toast';
 export default function DriverDashboard() {
   const { spots, selectedSpot, isLoading, selectSpot, refreshSpots } = useContext(ParkingContext);
 
-  // Called by ParkingScene when user clicks a spot in the 3D model
   function handleSpotClick(label) {
     const spot = spots.find(s => s.label === label);
     if (!spot) return;
-    if (spot.status !== 'free') {
-      toast(`La place ${label} n'est pas disponible.`, 'error');
-      return;
-    }
+    if (spot.status !== 'free') { toast(`La place ${label} n'est pas disponible.`, 'error'); return; }
     selectSpot(spot.id);
   }
 
-  const freeCount     = spots.filter(s => s.status === 'free').length;
-  const reservedCount = spots.filter(s => s.status === 'reserved').length;
-  const occupiedCount = spots.filter(s => s.status === 'occupied').length;
+  const free     = spots.filter(s => s.status === 'free').length;
+  const reserved = spots.filter(s => s.status === 'reserved').length;
+  const occupied = spots.filter(s => s.status === 'occupied').length;
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex flex-col">
+    <div style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
       <Navbar />
       <DebtBanner />
-
-      <main className="flex-1 flex flex-col pt-16">
+      <main style={{ flex:1, display:'flex', flexDirection:'column', paddingTop:64 }}>
         {/* Stats bar */}
-        <div className="flex items-center gap-6 px-6 py-3 bg-[var(--surface)]/80 border-b border-[var(--border)] backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 blink" />
-            <span className="font-mono text-xs text-emerald-400">{freeCount} LIBRE{freeCount !== 1 ? 'S' : ''}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-yellow-400" />
-            <span className="font-mono text-xs text-yellow-400">{reservedCount} RÉSERVÉE{reservedCount !== 1 ? 'S' : ''}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-red-400" />
-            <span className="font-mono text-xs text-red-400">{occupiedCount} OCCUPÉE{occupiedCount !== 1 ? 'S' : ''}</span>
-          </div>
-          <div className="ml-auto">
-            <button
-              onClick={refreshSpots}
-              className="flex items-center gap-1.5 text-xs font-mono text-[var(--muted)] hover:text-emerald-400 transition-colors"
-            >
-              <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
-              ACTUALISER
-            </button>
-          </div>
+        <div style={{ display:'flex', alignItems:'center', gap:24, padding:'10px 24px',
+          background:'var(--surface)', borderBottom:'1px solid var(--border)', flexWrap:'wrap' }}>
+          {[
+            { dot:'#63F8B5', label:`${free} LIBRE${free!==1?'S':''}`, color:'#63F8B5', blink:true },
+            { dot:'#facc15', label:`${reserved} RÉSERVÉE${reserved!==1?'S':''}`, color:'#facc15' },
+            { dot:'#ef4444', label:`${occupied} OCCUPÉE${occupied!==1?'S':''}`, color:'#ef4444' },
+          ].map(({ dot, label, color, blink }) => (
+            <div key={label} style={{ display:'flex', alignItems:'center', gap:7 }}>
+              <div style={{ width:8, height:8, borderRadius:'50%', background:dot, animation: blink ? 'blink 1.8s ease-in-out infinite' : 'none' }} />
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color, letterSpacing:'0.08em' }}>{label}</span>
+            </div>
+          ))}
+          <button onClick={refreshSpots} style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:6,
+            fontFamily:'var(--font-mono)', fontSize:11, color:'var(--muted)', background:'none', border:'none', cursor:'pointer',
+            letterSpacing:'0.08em', transition:'color 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.color='var(--cyan)'}
+            onMouseLeave={e => e.currentTarget.style.color='var(--muted)'}
+          >
+            <RefreshCw size={12} style={{ animation: isLoading ? 'spin 1s linear infinite' : 'none' }} />
+            ACTUALISER
+          </button>
         </div>
 
-        {/* 3D Scene */}
-        <div className="w-full bg-[var(--bg)] border-b border-[var(--border)]">
+        {/* 3D scene */}
+        <div style={{ background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
           <ParkingScene spots={spots} onSpotClick={handleSpotClick} />
         </div>
 
-        {/* 2D slot grid / horizontal scroll */}
-        <div className="px-6 py-4">
-          <p className="font-mono text-xs text-[var(--muted)] tracking-widest mb-3">
+        {/* 2D slot strip */}
+        <div style={{ padding:'20px 24px' }}>
+          <p style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'var(--muted)', letterSpacing:'0.12em', marginBottom:14 }}>
             TOUTES LES PLACES — Cliquez pour réserver
           </p>
           {isLoading && spots.length === 0 ? (
-            <div className="flex items-center gap-3 py-6">
+            <div style={{ display:'flex', alignItems:'center', gap:12, padding:'24px 0' }}>
               <Spinner size="sm" />
-              <span className="font-mono text-xs text-[var(--muted)]">Chargement des places…</span>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'var(--muted)' }}>Chargement des places…</span>
             </div>
           ) : (
-            <div className="flex gap-3 overflow-x-auto pb-3">
+            <div style={{ display:'flex', gap:12, overflowX:'auto', paddingBottom:12 }}>
               {spots.map(s => (
-                <ParkingSlot
-                  key={s.id}
-                  spot={s}
-                  onClick={(id) => {
-                    const spot = spots.find(sp => sp.id === id);
-                    if (spot?.status !== 'free') return;
-                    selectSpot(id);
-                  }}
-                />
+                <ParkingSlot key={s.id} spot={s}
+                  onClick={id => { const sp=spots.find(x=>x.id===id); if(sp?.status==='free') selectSpot(id); }} />
               ))}
             </div>
           )}
         </div>
       </main>
-
-      {/* Reservation modal */}
-      {selectedSpot && (
-        <ReservationModal
-          spot={selectedSpot}
-          onClose={() => selectSpot(null)}
-        />
-      )}
+      {selectedSpot && <ReservationModal spot={selectedSpot} onClose={() => selectSpot(null)} />}
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

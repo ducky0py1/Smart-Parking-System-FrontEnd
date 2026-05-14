@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { MapPin, CreditCard, ShieldCheck, ArrowRight, ArrowUpRight, Zap, Activity, Layers } from 'lucide-react';
+import { MapPin, CreditCard, ShieldCheck, ArrowRight, Zap, Activity, Layers } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import Navbar from '../components/Navbar';
 import api from '../services/api';
 
-/* ── Inline MetaMask fox SVG ── */
 function FoxIcon({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 35 33" fill="none">
@@ -24,173 +25,93 @@ function FoxIcon({ size = 20 }) {
   );
 }
 
-/* ── Animated counter ── */
 function Counter({ target, suffix = '' }) {
   const [count, setCount] = useState(0);
-  const ref = useRef(null);
   useEffect(() => {
     if (!target) return;
-    const duration = 1500;
-    const steps = 60;
-    const increment = target / steps;
-    let current = 0;
+    const steps = 60; const increment = target / steps; let current = 0;
     const timer = setInterval(() => {
       current = Math.min(current + increment, target);
       setCount(Math.floor(current));
       if (current >= target) clearInterval(timer);
-    }, duration / steps);
+    }, 1500 / steps);
     return () => clearInterval(timer);
   }, [target]);
-  return <span ref={ref}>{count.toLocaleString('fr-FR')}{suffix}</span>;
+  return <span>{count.toLocaleString('fr-FR')}{suffix}</span>;
 }
 
-/* ── Animated background with floating particles ── */
-function HeroBg() {
+function HeroBg({ isLight }) {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Mesh orbs */}
-      <div className="orb w-[600px] h-[600px] top-[-200px] left-[-150px]"
-        style={{ background: 'radial-gradient(circle, rgba(39,101,245,0.15) 0%, transparent 70%)' }} />
-      <div className="orb w-[500px] h-[500px] top-[100px] right-[-100px]"
-        style={{ background: 'radial-gradient(circle, rgba(11,193,244,0.12) 0%, transparent 70%)' }} />
-      <div className="orb w-[400px] h-[400px] bottom-[0px] left-[30%]"
-        style={{ background: 'radial-gradient(circle, rgba(39,245,200,0.08) 0%, transparent 70%)' }} />
-
-      {/* Dot grid */}
-      <div className="absolute inset-0 dot-grid opacity-30" />
-
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+      <div className="orb" style={{ width: 600, height: 600, top: -200, left: -150,
+        background: `radial-gradient(circle, ${isLight ? 'rgba(39,101,245,0.09)' : 'rgba(39,101,245,0.14)'} 0%, transparent 70%)` }} />
+      <div className="orb" style={{ width: 500, height: 500, top: 80, right: -100,
+        background: `radial-gradient(circle, ${isLight ? 'rgba(11,193,244,0.08)' : 'rgba(11,193,244,0.11)'} 0%, transparent 70%)` }} />
+      <div className="orb" style={{ width: 400, height: 400, bottom: 0, left: '30%',
+        background: `radial-gradient(circle, ${isLight ? 'rgba(39,245,200,0.06)' : 'rgba(39,245,200,0.08)'} 0%, transparent 70%)` }} />
+      <div className="absolute inset-0 dot-grid" style={{ opacity: isLight ? 0.4 : 0.28 }} />
       {/* Diagonal accent lines */}
-      <svg className="absolute inset-0 w-full h-full opacity-5" preserveAspectRatio="none">
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: isLight ? 0.07 : 0.05 }} preserveAspectRatio="none">
         <defs>
-          <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#0BC1F4" stopOpacity="0" />
             <stop offset="50%" stopColor="#0BC1F4" stopOpacity="1" />
             <stop offset="100%" stopColor="#0BC1F4" stopOpacity="0" />
           </linearGradient>
         </defs>
-        <line x1="0" y1="30%" x2="100%" y2="70%" stroke="url(#lineGrad)" strokeWidth="1" />
-        <line x1="0" y1="60%" x2="100%" y2="20%" stroke="url(#lineGrad)" strokeWidth="0.5" />
+        <line x1="0" y1="30%" x2="100%" y2="70%" stroke="url(#lg1)" strokeWidth="1" />
+        <line x1="0" y1="65%" x2="100%" y2="20%" stroke="url(#lg1)" strokeWidth="0.5" />
       </svg>
-
-      {/* Floating data nodes */}
+      {/* Floating nodes */}
       {[
-        { x: '8%',  y: '20%', delay: '0s',   size: 6, label: 'TX: 0xa3f...' },
-        { x: '88%', y: '15%', delay: '1.2s', size: 5, label: 'SPOT A4' },
-        { x: '92%', y: '65%', delay: '2.4s', size: 7, label: '0.004 ETH' },
-        { x: '5%',  y: '72%', delay: '0.8s', size: 5, label: 'LIBRE' },
-        { x: '50%', y: '8%',  delay: '1.8s', size: 4, label: 'BLOCK #194' },
-      ].map((node, i) => (
-        <div key={i} className="absolute flex items-center gap-2 float"
-          style={{ left: node.x, top: node.y, animationDelay: node.delay }}>
-          <div className="rounded-full border border-[var(--border-hi)] blink"
-            style={{ width: node.size * 2, height: node.size * 2,
-              background: 'rgba(11,193,244,0.2)', boxShadow: '0 0 10px rgba(11,193,244,0.4)' }} />
-          <span className="font-mono text-[10px] text-[var(--muted)] bg-[var(--surface)] px-2 py-0.5 rounded border border-[var(--border)] hidden lg:block">
-            {node.label}
-          </span>
+        { x: '7%',  y: '22%', delay: '0s',   s: 6, label: 'TX: 0xa3f…' },
+        { x: '88%', y: '15%', delay: '1.2s', s: 5, label: 'SPOT A4' },
+        { x: '92%', y: '62%', delay: '2.4s', s: 7, label: '0.004 ETH' },
+        { x: '4%',  y: '68%', delay: '0.8s', s: 5, label: 'LIBRE' },
+        { x: '50%', y: '7%',  delay: '1.8s', s: 4, label: 'BLOCK #194' },
+      ].map((n, i) => (
+        <div key={i} className="float" style={{ position: 'absolute', left: n.x, top: n.y, animationDelay: n.delay, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div className="blink" style={{ width: n.s * 2, height: n.s * 2, borderRadius: '50%',
+            background: 'rgba(11,193,244,0.2)', border: '1px solid rgba(11,193,244,0.45)',
+            boxShadow: '0 0 10px rgba(11,193,244,0.4)' }} />
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            padding: '2px 7px', borderRadius: 4, display: 'none' }}
+            className="lg:block">{n.label}</span>
         </div>
       ))}
     </div>
   );
 }
 
-/* ── Navbar ── */
-function Navbar({ transparent, token }) {
-  const [scrolled, setScrolled] = useState(false);
-  const navigate = useNavigate();
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', fn);
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-
-  const solid = !transparent || scrolled;
-  return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, height: 64,
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 32px',
-      transition: 'all 0.3s ease',
-      background: solid ? 'rgba(3,8,15,0.92)' : 'transparent',
-      backdropFilter: solid ? 'blur(24px)' : 'none',
-      borderBottom: solid ? '1px solid rgba(39,101,245,0.18)' : 'none',
-    }}>
-      {/* Logo */}
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <div style={{
-          width: 34, height: 34, borderRadius: 8,
-          background: 'linear-gradient(135deg, #0BC1F4 0%, #2765F5 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 16px rgba(11,193,244,0.4)',
-        }}>
-          <Zap size={16} color="white" />
-        </div>
-        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 18, color: 'white', letterSpacing: 1 }}>
-          PARK<span style={{ background: 'var(--grad-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>CHAIN</span>
-        </span>
-      </Link>
-
-      {/* Links */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {token ? (
-          <button onClick={() => navigate('/dashboard')} style={{
-            fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.1em',
-            color: 'var(--cyan)', padding: '8px 20px', borderRadius: 8,
-            background: 'rgba(11,193,244,0.08)', border: '1px solid rgba(11,193,244,0.3)',
-            cursor: 'pointer', transition: 'all 0.2s',
-          }}>
-            TABLEAU DE BORD →
-          </button>
-        ) : (
-          <Link to="/login" style={{
-            fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.08em',
-            color: 'white', padding: '8px 20px', borderRadius: 8,
-            background: 'linear-gradient(135deg, #63F8B5 0%, #0BC1F4 100%)',
-            textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
-            boxShadow: '0 0 20px rgba(11,193,244,0.2)',
-          }}>
-            CONNEXION
-          </Link>
-        )}
-      </div>
-    </nav>
-  );
-}
-
-/* ── Hero ── */
-function Hero({ onCTA, connected, loading }) {
+function Hero({ onCTA, connected, loading, isLight }) {
   return (
     <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
-      <HeroBg />
+      <HeroBg isLight={isLight} />
       <div style={{ position: 'relative', zIndex: 10, maxWidth: 820, width: '100%', textAlign: 'center' }}>
-
         {/* Status pill */}
         <div className="fade-up" style={{ animationDelay: '0s', display: 'inline-flex', alignItems: 'center', gap: 8,
           padding: '6px 18px', borderRadius: 999, marginBottom: 32,
-          background: 'rgba(11,193,244,0.08)', border: '1px solid rgba(11,193,244,0.25)' }}>
+          background: 'var(--pill-bg)', border: '1px solid var(--pill-border)' }}>
           <span className="blink" style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--spring)', display: 'inline-block' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--teal)', letterSpacing: '0.12em' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--pill-text)', letterSpacing: '0.12em' }}>
             RÉSEAU GANACHE · SMART CONTRACT ACTIF
           </span>
         </div>
-
         {/* Headline */}
         <h1 className="fade-up font-display" style={{ animationDelay: '0.1s', lineHeight: 1.05, marginBottom: 20, fontWeight: 900 }}>
-          <span style={{ display: 'block', fontSize: 'clamp(52px, 9vw, 96px)', color: 'white', letterSpacing: '-0.02em' }}>
+          <span style={{ display: 'block', fontSize: 'clamp(48px,9vw,96px)', color: 'var(--text)', letterSpacing: '-0.02em' }}>
             Stationnement
           </span>
-          <span className="grad-text-full" style={{ display: 'block', fontSize: 'clamp(52px, 9vw, 96px)', letterSpacing: '-0.02em' }}>
+          <span className="grad-text-full" style={{ display: 'block', fontSize: 'clamp(48px,9vw,96px)', letterSpacing: '-0.02em' }}>
             Décentralisé.
           </span>
         </h1>
-
         {/* Subline */}
         <p className="fade-up" style={{ animationDelay: '0.2s', fontSize: 18, color: 'var(--muted)', maxWidth: 540, margin: '0 auto 48px', lineHeight: 1.7 }}>
-          Réservez et payez votre place directement sur la blockchain.
-          Transparent, vérifiable, sans intermédiaire.
+          Réservez et payez votre place directement sur la blockchain. Transparent, vérifiable, sans intermédiaire.
         </p>
-
-        {/* CTA buttons */}
+        {/* CTA */}
         <div className="fade-up" style={{ animationDelay: '0.3s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           {connected ? (
             <button onClick={onCTA} className="btn-primary"
@@ -201,10 +122,7 @@ function Hero({ onCTA, connected, loading }) {
             <button onClick={onCTA} disabled={loading} className="btn-metamask"
               style={{ padding: '16px 40px', borderRadius: 12, fontSize: 14, cursor: loading ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 12, opacity: loading ? 0.7 : 1 }}>
-              {loading
-                ? <><span className="blink">●</span> CONNEXION EN COURS…</>
-                : <><FoxIcon size={22} /> CONNECTER METAMASK</>
-              }
+              {loading ? <><span className="blink">●</span> CONNEXION…</> : <><FoxIcon size={22} /> CONNECTER METAMASK</>}
             </button>
           )}
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted2)', letterSpacing: '0.08em' }}>
@@ -212,68 +130,31 @@ function Hero({ onCTA, connected, loading }) {
           </span>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <div style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted2)', letterSpacing: '0.2em' }}>
-          DÉFILER
-        </span>
+      {/* Scroll cue */}
+      <div style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted2)', letterSpacing: '0.2em' }}>DÉFILER</span>
         <div style={{ width: 1, height: 40, background: 'linear-gradient(to bottom, var(--muted2), transparent)' }} />
       </div>
     </section>
   );
 }
 
-/* ── How it Works ── */
 const STEPS = [
-  {
-    num: '01',
-    icon: <MapPin size={22} />,
-    color: '#63F8B5',
-    colorBg: 'rgba(99,248,181,0.08)',
-    colorBorder: 'rgba(99,248,181,0.25)',
-    title: 'Choisissez une place',
-    desc: 'Visualisez en temps réel les places disponibles sur la carte 3D interactive. Sélectionnez celle qui vous convient.',
-  },
-  {
-    num: '02',
-    icon: <FoxIcon size={22} />,
-    color: '#F4640B',
-    colorBg: 'rgba(244,100,11,0.08)',
-    colorBorder: 'rgba(244,100,11,0.30)',
-    title: <><span style={{ color: '#F4640B' }}>MetaMask</span> paie en ETH</>,
-    desc: 'Confirmez le paiement via votre portefeuille MetaMask. Le smart contract enregistre la transaction de façon immuable.',
-    metamask: true,
-  },
-  {
-    num: '03',
-    icon: <ShieldCheck size={22} />,
-    color: '#0BC1F4',
-    colorBg: 'rgba(11,193,244,0.08)',
-    colorBorder: 'rgba(11,193,244,0.25)',
-    title: 'Garez-vous sereinement',
-    desc: 'Votre réservation est cryptographiquement prouvée sur la blockchain. Consultable à tout moment.',
-  },
+  { num:'01', icon:<MapPin size={22}/>, color:'#63F8B5', border:'rgba(99,248,181,0.25)', bg:'var(--step-bg-green)', title:'Choisissez une place', desc:'Visualisez en temps réel les places disponibles sur la carte 3D interactive.' },
+  { num:'02', icon:<FoxIcon size={22}/>, color:'#F4640B', border:'rgba(244,100,11,0.30)', bg:'var(--step-bg-orange)', title:<><span style={{color:'#F4640B'}}>MetaMask</span> paie en ETH</>, desc:'Confirmez le paiement via MetaMask. Le smart contract enregistre la transaction de façon immuable.', metamask:true },
+  { num:'03', icon:<ShieldCheck size={22}/>, color:'#0BC1F4', border:'rgba(11,193,244,0.25)', bg:'var(--step-bg-cyan)', title:'Garez-vous sereinement', desc:'Votre réservation est cryptographiquement prouvée sur la blockchain. Consultable à tout moment.' },
 ];
 
 function HowItWorks() {
   return (
     <section style={{ padding: '120px 24px', position: 'relative' }}>
-      {/* Section bg accent */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-        background: 'linear-gradient(90deg, transparent, rgba(11,193,244,0.4), transparent)'
-      }} />
-
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+        background: 'linear-gradient(90deg, transparent, var(--section-line), transparent)' }} />
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 64, flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--teal)', letterSpacing: '0.15em' }}>
-              PROCESSUS
-            </span>
-            <h2 className="font-display" style={{ fontSize: 44, fontWeight: 800, color: 'white', marginTop: 8, letterSpacing: '-0.02em' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--teal)', letterSpacing: '0.15em' }}>PROCESSUS</span>
+            <h2 className="font-display" style={{ fontSize: 44, fontWeight: 800, color: 'var(--text)', marginTop: 8, letterSpacing: '-0.02em' }}>
               Comment ça<br /><span className="grad-text">fonctionne</span>
             </h2>
           </div>
@@ -281,49 +162,27 @@ function HowItWorks() {
             Trois étapes simples pour réserver votre stationnement de façon décentralisée.
           </span>
         </div>
-
-        {/* Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-          {STEPS.map(({ num, icon, color, colorBg, colorBorder, title, desc, metamask }) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 24 }}>
+          {STEPS.map(({ num, icon, color, border, bg, title, desc, metamask }) => (
             <div key={num} style={{
               position: 'relative', padding: 32, borderRadius: 20,
-              background: metamask
-                ? 'linear-gradient(145deg, rgba(244,100,11,0.06) 0%, rgba(8,21,37,0.95) 100%)'
-                : 'rgba(8,21,37,0.8)',
-              border: `1px solid ${colorBorder}`,
-              backdropFilter: 'blur(10px)',
+              background: bg, border: `1px solid ${border}`, backdropFilter: 'blur(10px)',
               transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: metamask ? '0 0 40px rgba(244,100,11,0.08)' : '0 0 0 transparent',
+              boxShadow: metamask ? '0 0 40px rgba(244,100,11,0.08)' : 'none',
             }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 20px 60px ${colorBg}`; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = metamask ? '0 0 40px rgba(244,100,11,0.08)' : '0 0 0 transparent'; }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 20px 60px ${bg}`; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = metamask ? '0 0 40px rgba(244,100,11,0.08)' : 'none'; }}
             >
-              {/* Step number */}
-              <span style={{ position: 'absolute', top: 20, right: 24,
-                fontFamily: 'var(--font-mono)', fontSize: 48, fontWeight: 700,
-                color: colorBorder, lineHeight: 1, userSelect: 'none' }}>
-                {num}
-              </span>
-
-              {/* Icon */}
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: colorBg,
-                border: `1px solid ${colorBorder}`, display: 'flex', alignItems: 'center',
-                justifyContent: 'center', marginBottom: 24, color }}>
+              <span style={{ position: 'absolute', top: 20, right: 24, fontFamily: 'var(--font-mono)', fontSize: 48, fontWeight: 700, color: border, lineHeight: 1, userSelect: 'none' }}>{num}</span>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: bg, border: `1px solid ${border}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, color }}>
                 {icon}
               </div>
-
-              {/* Title */}
-              <h3 className="font-display" style={{ fontSize: 20, fontWeight: 700, color: 'white', marginBottom: 12, lineHeight: 1.3 }}>
-                {title}
-              </h3>
-
+              <h3 className="font-display" style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 12, lineHeight: 1.3 }}>{title}</h3>
               <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.75 }}>{desc}</p>
-
-              {/* MetaMask orange bar */}
               {metamask && (
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
-                  background: 'linear-gradient(90deg, transparent, #F4640B, transparent)',
-                  borderRadius: '0 0 20px 20px' }} />
+                  background: 'linear-gradient(90deg,transparent,#F4640B,transparent)', borderRadius: '0 0 20px 20px' }} />
               )}
             </div>
           ))}
@@ -333,36 +192,26 @@ function HowItWorks() {
   );
 }
 
-/* ── Features strip ── */
 const FEATURES = [
-  { icon: <Activity size={18} />, label: 'Temps réel', desc: 'Actualisation toutes les 3 secondes', color: 'var(--spring)' },
-  { icon: <Layers size={18} />, label: 'On-chain', desc: 'Chaque transaction est immuable', color: 'var(--cyan)' },
-  { icon: <ShieldCheck size={18} />, label: 'Sécurisé', desc: 'Smart contract auditable', color: 'var(--teal)' },
-  { icon: <Zap size={18} />, label: 'IoT ready', desc: 'Capteurs Raspberry Pi Pico', color: '#2765F5' },
+  { icon:<Activity size={18}/>, label:'Temps réel', desc:'Actualisation toutes les 3 secondes', color:'var(--spring)' },
+  { icon:<Layers size={18}/>, label:'On-chain', desc:'Chaque transaction est immuable', color:'var(--cyan)' },
+  { icon:<ShieldCheck size={18}/>, label:'Sécurisé', desc:'Smart contract auditable', color:'var(--teal)' },
+  { icon:<Zap size={18}/>, label:'IoT ready', desc:'Capteurs Raspberry Pi Pico', color:'#2765F5' },
 ];
 
 function Features() {
   return (
     <section style={{ padding: '0 24px 100px' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 1, borderRadius: 20, overflow: 'hidden',
-          border: '1px solid var(--border)',
-          background: 'var(--border)',
-        }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 1, borderRadius: 20, overflow: 'hidden', border: '1px solid var(--border)', background: 'var(--border)' }}>
           {FEATURES.map(({ icon, label, desc, color }) => (
-            <div key={label} style={{
-              padding: '32px 28px', background: 'var(--surface)',
-              display: 'flex', flexDirection: 'column', gap: 12,
-              transition: 'background 0.2s',
-            }}
-              onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'}
+            <div key={label} style={{ padding: '32px 28px', background: 'var(--surface)', display: 'flex', flexDirection: 'column', gap: 12, transition: 'background 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--feat-hover)'}
               onMouseLeave={e => e.currentTarget.style.background = 'var(--surface)'}
             >
               <div style={{ color, display: 'flex', alignItems: 'center', gap: 8 }}>
                 {icon}
-                <span className="font-display" style={{ fontWeight: 700, fontSize: 16, color: 'white' }}>{label}</span>
+                <span className="font-display" style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>{label}</span>
               </div>
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>{desc}</p>
             </div>
@@ -373,44 +222,27 @@ function Features() {
   );
 }
 
-/* ── Live Stats ── */
 function LiveStats() {
   const [stats, setStats] = useState(null);
   useEffect(() => {
-    const load = async () => {
-      try { const { data } = await api.get('/stats'); setStats(data); }
-      catch {}
-    };
-    load();
-    const t = setInterval(load, 30000);
-    return () => clearInterval(t);
+    const load = async () => { try { const { data } = await api.get('/stats'); setStats(data); } catch {} };
+    load(); const t = setInterval(load, 30000); return () => clearInterval(t);
   }, []);
   if (!stats) return null;
-
   return (
     <section style={{ padding: '80px 24px', position: 'relative' }}>
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, transparent 0%, rgba(39,101,245,0.04) 50%, transparent 100%)',
-        borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)',
-      }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'var(--stat-section)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }} />
       <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted2)', letterSpacing: '0.15em', textAlign: 'center', marginBottom: 48 }}>
-          STATISTIQUES EN DIRECT
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32, textAlign: 'center' }}>
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted2)', letterSpacing: '0.15em', textAlign: 'center', marginBottom: 48 }}>STATISTIQUES EN DIRECT</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 32, textAlign: 'center' }}>
           {[
-            { val: stats.total_spots, label: 'PLACES TOTALES', color: 'white' },
+            { val: stats.total_spots, label: 'PLACES TOTALES', color: 'var(--text)' },
             { val: stats.available_spots, label: 'DISPONIBLES', color: 'var(--spring)' },
             { val: stats.total_transactions, label: 'TRANSACTIONS', color: 'var(--cyan)' },
           ].map(({ val, label, color }) => (
             <div key={label}>
-              <div className="font-display" style={{ fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 900, color, lineHeight: 1 }}>
-                <Counter target={val} />
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted)', marginTop: 10, letterSpacing: '0.12em' }}>
-                {label}
-              </div>
+              <div className="font-display" style={{ fontSize: 'clamp(40px,6vw,72px)', fontWeight: 900, color, lineHeight: 1 }}><Counter target={val} /></div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted)', marginTop: 10, letterSpacing: '0.12em' }}>{label}</div>
             </div>
           ))}
         </div>
@@ -419,42 +251,30 @@ function LiveStats() {
   );
 }
 
-/* ── CTA Banner ── */
 function CTABanner({ onCTA, connected, loading }) {
   return (
     <section style={{ padding: '80px 24px 120px' }}>
       <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
-        <div style={{
-          padding: '64px 48px', borderRadius: 28,
-          background: 'linear-gradient(145deg, rgba(39,101,245,0.12) 0%, rgba(11,193,244,0.06) 50%, rgba(8,21,37,0.98) 100%)',
-          border: '1px solid var(--border-hi)',
-          boxShadow: '0 0 80px rgba(11,193,244,0.07)',
-          position: 'relative', overflow: 'hidden',
-        }}>
-          {/* Corner glow */}
+        <div style={{ padding: '64px 48px', borderRadius: 28, background: 'var(--cta-bg)',
+          border: '1px solid var(--border-hi)', boxShadow: '0 0 80px rgba(11,193,244,0.05)', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200,
-            background: 'radial-gradient(circle, rgba(11,193,244,0.12) 0%, transparent 70%)',
-            pointerEvents: 'none' }} />
-
-          <h2 className="font-display" style={{ fontSize: 36, fontWeight: 800, color: 'white', marginBottom: 16, letterSpacing: '-0.01em' }}>
+            background: 'radial-gradient(circle,rgba(11,193,244,0.10) 0%,transparent 70%)', pointerEvents: 'none' }} />
+          <h2 className="font-display" style={{ fontSize: 36, fontWeight: 800, color: 'var(--text)', marginBottom: 16, letterSpacing: '-0.01em' }}>
             Prêt à vous garer<br />intelligemment ?
           </h2>
           <p style={{ fontSize: 15, color: 'var(--muted)', marginBottom: 40, lineHeight: 1.7 }}>
             Connectez votre portefeuille <span style={{ color: '#F4640B', fontWeight: 600 }}>MetaMask</span> et réservez votre place en quelques secondes.
           </p>
-
           {connected ? (
             <button onClick={onCTA} className="btn-primary"
-              style={{ padding: '16px 44px', borderRadius: 12, fontSize: 13, cursor: 'pointer',
-                display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              style={{ padding: '16px 44px', borderRadius: 12, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               ACCÉDER AU TABLEAU DE BORD <ArrowRight size={16} />
             </button>
           ) : (
             <button onClick={onCTA} disabled={loading} className="btn-metamask"
               style={{ padding: '16px 44px', borderRadius: 12, fontSize: 14, cursor: loading ? 'not-allowed' : 'pointer',
                 display: 'inline-flex', alignItems: 'center', gap: 12, opacity: loading ? 0.7 : 1 }}>
-              <FoxIcon size={22} />
-              {loading ? 'CONNEXION…' : 'CONNECTER METAMASK'}
+              <FoxIcon size={22} />{loading ? 'CONNEXION…' : 'CONNECTER METAMASK'}
             </button>
           )}
         </div>
@@ -463,19 +283,13 @@ function CTABanner({ onCTA, connected, loading }) {
   );
 }
 
-/* ── Footer ── */
 function Footer() {
   const addr = import.meta.env.VITE_CONTRACT_ADDRESS;
   return (
-    <footer style={{
-      borderTop: '1px solid var(--border)', padding: '32px 32px',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      flexWrap: 'wrap', gap: 16,
-      background: 'rgba(6,14,26,0.9)',
-    }}>
+    <footer style={{ borderTop: '1px solid var(--border)', padding: '32px', background: 'var(--footer-bg)',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 26, height: 26, borderRadius: 6,
-          background: 'linear-gradient(135deg, #0BC1F4 0%, #2765F5 100%)',
+        <div style={{ width: 26, height: 26, borderRadius: 6, background: 'linear-gradient(135deg,#0BC1F4,#2765F5)',
           display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Zap size={12} color="white" />
         </div>
@@ -483,19 +297,16 @@ function Footer() {
           PARKCHAIN © 2024 — SYSTÈME DE STATIONNEMENT DÉCENTRALISÉ
         </span>
       </div>
-      {addr && (
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted2)' }}>
-          CONTRACT: {addr.slice(0,10)}…{addr.slice(-6)}
-        </span>
-      )}
+      {addr && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted2)' }}>CONTRACT: {addr.slice(0,10)}…{addr.slice(-6)}</span>}
     </footer>
   );
 }
 
-/* ── Page ── */
 export default function Home() {
   const { connectWallet, token, user, loading } = useContext(AuthContext);
+  const { theme } = useTheme();
   const navigate = useNavigate();
+  const isLight = theme === 'light';
 
   async function handleCTA() {
     if (token) { navigate('/dashboard'); return; }
@@ -505,9 +316,9 @@ export default function Home() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', overflowX: 'hidden' }}>
-      <Navbar transparent token={token} />
-      <Hero onCTA={handleCTA} connected={!!token} loading={loading} />
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <Navbar transparent />
+      <Hero onCTA={handleCTA} connected={!!token} loading={loading} isLight={isLight} />
       <HowItWorks />
       <Features />
       <LiveStats />

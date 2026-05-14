@@ -1,66 +1,50 @@
 import { Loader2 } from 'lucide-react';
 
 const variants = {
-  primary: `
-    bg-emerald-500 hover:bg-emerald-400 text-white
-    border border-emerald-400/50
-    shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]
-  `,
-  secondary: `
-    bg-[var(--surface3)] hover:bg-[var(--border)] text-[var(--text)]
-    border border-[var(--border-light)] hover:border-emerald-500/40
-  `,
-  danger: `
-    bg-red-500/10 hover:bg-red-500/20 text-red-400
-    border border-red-500/30 hover:border-red-500/50
-  `,
-  ghost: `
-    bg-transparent hover:bg-[var(--surface3)] text-[var(--muted)]
-    hover:text-[var(--text)] border border-transparent
-  `,
-  outline: `
-    bg-transparent hover:bg-emerald-500/10 text-emerald-400
-    border border-emerald-500/40 hover:border-emerald-500/70
-  `,
+  primary: {
+    background: 'linear-gradient(135deg,#63F8B5 0%,#0BC1F4 60%,#2765F5 100%)',
+    border: 'none', color: '#03080F',
+    boxShadow: '0 0 24px rgba(11,193,244,0.2)',
+  },
+  secondary: {
+    background: 'var(--surface3)', border: '1px solid var(--border-md)',
+    color: 'var(--text)',
+  },
+  danger: {
+    background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+    color: '#ef4444',
+  },
+  ghost: {
+    background: 'transparent', border: '1px solid transparent',
+    color: 'var(--muted)',
+  },
+  outline: {
+    background: 'transparent', border: '1px solid rgba(11,193,244,0.4)',
+    color: 'var(--cyan)',
+  },
 };
+const sizes = { sm:'8px 14px', md:'10px 18px', lg:'14px 28px', xl:'17px 40px' };
+const fontSizes = { sm:11, md:12, lg:13, xl:14 };
 
-const sizes = {
-  sm: 'px-3 py-1.5 text-xs',
-  md: 'px-4 py-2.5 text-sm',
-  lg: 'px-6 py-3 text-base',
-  xl: 'px-8 py-4 text-lg',
-};
-
-export default function Button({
-  variant = 'primary',
-  size = 'md',
-  disabled = false,
-  loading = false,
-  onClick,
-  children,
-  className = '',
-  type = 'button',
-  fullWidth = false,
-}) {
+export default function Button({ variant='primary', size='md', disabled=false, loading=false, onClick, children, className='', type='button', fullWidth=false, style={} }) {
+  const v = variants[variant] || variants.primary;
   const isDisabled = disabled || loading;
   return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={isDisabled}
-      className={`
-        inline-flex items-center justify-center gap-2
-        font-mono font-medium tracking-wider rounded-lg
-        transition-all duration-200 cursor-pointer
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${variants[variant]}
-        ${sizes[size]}
-        ${fullWidth ? 'w-full' : ''}
-        ${className}
-      `}
+    <button type={type} onClick={onClick} disabled={isDisabled}
+      style={{
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        padding: sizes[size], borderRadius: 10,
+        fontFamily: 'var(--font-mono)', fontSize: fontSizes[size], fontWeight: 600, letterSpacing: '0.07em',
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        opacity: isDisabled ? 0.5 : 1, width: fullWidth ? '100%' : undefined,
+        transition: 'all 0.2s ease',
+        ...v, ...style,
+      }}
+      className={className}
     >
-      {loading && <Loader2 size={14} className="animate-spin" />}
+      {loading && <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} />}
       {children}
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </button>
   );
 }

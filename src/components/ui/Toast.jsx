@@ -1,60 +1,35 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
-// Module-level listeners so toast() can be called from anywhere
 let listeners = [];
-
-function subscribe(fn) {
-  listeners.push(fn);
-  return () => { listeners = listeners.filter(l => l !== fn); };
-}
-
-function emit(toast) {
-  listeners.forEach(fn => fn(toast));
-}
-
-// Public API — import and call from services/hooks/pages
-export function toast(message, type = 'info') {
-  emit({ id: Date.now() + Math.random(), message, type });
-}
+function subscribe(fn) { listeners.push(fn); return () => { listeners = listeners.filter(l=>l!==fn); }; }
+function emit(t) { listeners.forEach(fn=>fn(t)); }
+export function toast(message, type='info') { emit({ id:Date.now()+Math.random(), message, type }); }
 
 const icons = {
-  success: <CheckCircle size={16} className="text-emerald-400 flex-shrink-0" />,
-  error:   <AlertCircle size={16} className="text-red-400 flex-shrink-0" />,
-  info:    <Info size={16} className="text-blue-400 flex-shrink-0" />,
+  success: <CheckCircle size={15} style={{ color:'#63F8B5', flexShrink:0 }}/>,
+  error:   <AlertCircle size={15} style={{ color:'#ef4444', flexShrink:0 }}/>,
+  info:    <Info size={15} style={{ color:'#0BC1F4', flexShrink:0 }}/>,
 };
-
-const borders = {
-  success: 'border-emerald-500/40',
-  error:   'border-red-500/40',
-  info:    'border-blue-500/40',
-};
+const borders = { success:'rgba(99,248,181,0.35)', error:'rgba(239,68,68,0.35)', info:'rgba(11,193,244,0.35)' };
 
 function ToastItem({ id, message, type, onRemove }) {
   const [exiting, setExiting] = useState(false);
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setExiting(true);
-      setTimeout(() => onRemove(id), 300);
-    }, 3000);
-    return () => clearTimeout(timer);
+    const t = setTimeout(()=>{ setExiting(true); setTimeout(()=>onRemove(id),300); }, 3500);
+    return ()=>clearTimeout(t);
   }, [id, onRemove]);
-
   return (
-    <div className={`
-      flex items-start gap-3 px-4 py-3
-      bg-[var(--surface2)] border ${borders[type]}
-      rounded-lg shadow-xl max-w-sm w-full
-      ${exiting ? 'toast-exit' : 'toast-enter'}
-    `}>
+    <div style={{ display:'flex', alignItems:'flex-start', gap:10, padding:'12px 16px',
+      background:'var(--surface2)', border:`1px solid ${borders[type]||borders.info}`,
+      borderRadius:10, boxShadow:'0 8px 30px rgba(0,0,0,0.2)', maxWidth:340, width:'100%',
+      animation: exiting ? 'toastOut 0.25s ease-in forwards' : 'toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards',
+    }}>
       {icons[type]}
-      <p className="text-sm text-[var(--text)] flex-1 leading-relaxed">{message}</p>
-      <button
-        onClick={() => { setExiting(true); setTimeout(() => onRemove(id), 300); }}
-        className="text-[var(--muted)] hover:text-[var(--text)] transition-colors ml-1"
-      >
-        <X size={14} />
+      <p style={{ fontSize:13, color:'var(--text)', flex:1, lineHeight:1.5 }}>{message}</p>
+      <button onClick={()=>{setExiting(true);setTimeout(()=>onRemove(id),300);}}
+        style={{ background:'none', border:'none', cursor:'pointer', color:'var(--muted)', padding:0, flexShrink:0 }}>
+        <X size={13}/>
       </button>
     </div>
   );
@@ -62,21 +37,11 @@ function ToastItem({ id, message, type, onRemove }) {
 
 export function ToastContainer() {
   const [toasts, setToasts] = useState([]);
-
-  useEffect(() => {
-    const unsub = subscribe(t => setToasts(prev => [...prev, t]));
-    return unsub;
-  }, []);
-
-  const remove = useCallback((id) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }, []);
-
+  useEffect(() => { const u=subscribe(t=>setToasts(p=>[...p,t])); return u; }, []);
+  const remove = useCallback(id=>setToasts(p=>p.filter(t=>t.id!==id)), []);
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2">
-      {toasts.map(t => (
-        <ToastItem key={t.id} {...t} onRemove={remove} />
-      ))}
+    <div style={{ position:'fixed', bottom:24, right:24, zIndex:9999, display:'flex', flexDirection:'column', gap:8 }}>
+      {toasts.map(t=><ToastItem key={t.id} {...t} onRemove={remove}/>)}
     </div>
   );
 }

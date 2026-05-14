@@ -1,46 +1,31 @@
 import { useState } from 'react';
 import { AlertTriangle, ArrowRight } from 'lucide-react';
 import { useDebt } from '../hooks/useDebt';
-import Button from './ui/Button';
 import { toast } from './ui/Toast';
-
 export default function DebtBanner() {
   const { debt, payDebt } = useDebt();
   const [paying, setPaying] = useState(false);
-
   if (debt <= 0) return null;
-
   async function handlePay() {
     setPaying(true);
-    try {
-      await payDebt();
-    } catch (err) {
-      toast('Erreur lors du paiement : ' + (err.message || 'Échec'), 'error');
-    } finally {
-      setPaying(false);
-    }
+    try { await payDebt(); } catch(err) { toast('Erreur: '+(err.message||'Échec'),'error'); }
+    finally { setPaying(false); }
   }
-
   return (
-    <div className="w-full bg-red-500/10 border-b border-red-500/30 px-6 py-3 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        <AlertTriangle size={16} className="text-red-400 flex-shrink-0 blink" />
-        <span className="text-sm text-red-300 font-mono">
-          DETTE EN COURS :{' '}
-          <span className="font-bold text-red-200">{debt.toFixed(6)} ETH</span>
-          <span className="text-red-400 ml-2 hidden sm:inline">
-            — Veuillez régler avant de faire une nouvelle réservation
-          </span>
+    <div style={{ background:'rgba(244,100,11,0.08)', borderBottom:'1px solid rgba(244,100,11,0.25)',
+      padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+        <AlertTriangle size={15} style={{ color:'#F4640B', flexShrink:0, animation:'blink 1.8s ease-in-out infinite' }}/>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'rgba(244,100,11,0.9)', letterSpacing:'0.06em' }}>
+          DETTE EN COURS : <strong style={{ color:'#F4640B' }}>{debt.toFixed(6)} ETH</strong>
+          <span style={{ color:'rgba(244,100,11,0.6)', marginLeft:8 }}>— Réglez avant toute réservation</span>
         </span>
       </div>
-      <Button
-        variant="danger"
-        size="sm"
-        loading={paying}
-        onClick={handlePay}
-      >
-        PAYER <ArrowRight size={12} />
-      </Button>
+      <button onClick={handlePay} disabled={paying} className="btn-metamask"
+        style={{ padding:'7px 16px', borderRadius:8, fontSize:11, cursor:paying?'not-allowed':'pointer',
+          display:'flex', alignItems:'center', gap:6, opacity:paying?0.7:1, flexShrink:0 }}>
+        {paying?<span className="blink">●</span>:<><span>PAYER</span><ArrowRight size={11}/></>}
+      </button>
     </div>
   );
 }

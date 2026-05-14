@@ -1,20 +1,19 @@
 const colors = {
-  gray:   'bg-gray-500/15 text-gray-400 border-gray-500/30',
-  green:  'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-  amber:  'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
-  red:    'bg-red-500/15 text-red-400 border-red-500/30',
-  blue:   'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  gray:  { bg:'rgba(107,114,128,0.12)', color:'var(--muted)', border:'rgba(107,114,128,0.25)' },
+  green: { bg:'rgba(99,248,181,0.12)',  color:'#63F8B5',      border:'rgba(99,248,181,0.30)' },
+  amber: { bg:'rgba(250,204,21,0.12)',  color:'#facc15',      border:'rgba(250,204,21,0.30)' },
+  red:   { bg:'rgba(239,68,68,0.12)',   color:'#ef4444',      border:'rgba(239,68,68,0.30)' },
+  blue:  { bg:'rgba(59,130,246,0.12)',  color:'#3b82f6',      border:'rgba(59,130,246,0.30)' },
 };
-
-export default function Badge({ color = 'gray', children, className = '' }) {
+export default function Badge({ color='gray', children, className='' }) {
+  const c = colors[color] || colors.gray;
   return (
-    <span className={`
-      inline-flex items-center gap-1
-      px-2 py-0.5 rounded text-xs font-mono font-medium
-      border tracking-wider
-      ${colors[color]}
-      ${className}
-    `}>
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: '3px 9px', borderRadius: 5,
+      fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 500, letterSpacing: '0.1em',
+      background: c.bg, color: c.color, border: `1px solid ${c.border}`,
+    }} className={className}>
       {children}
     </span>
   );
