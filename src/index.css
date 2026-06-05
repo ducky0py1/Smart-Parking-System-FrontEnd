@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cabinet+Grotesk:wght@400;500;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -21,6 +21,7 @@
   --grad-full:    linear-gradient(135deg, #BBFCDF 0%, #63F8B5 20%, #27F5C8 45%, #0BC1F4 70%, #2765F5 100%);
 
   --font-display: 'Cabinet Grotesk', sans-serif;
+  --font-serif:   'Playfair Display', Georgia, serif;
   --font-body:    'Syne', sans-serif;
   --font-mono:    'DM Mono', monospace;
 }
@@ -206,6 +207,8 @@ button, a, [style*="transform"], [style*="animation"] {
 
 .toast-enter { animation: toastIn  0.35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 .toast-exit  { animation: toastOut 0.25s ease-in forwards; }
+
+@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }
 
 /* ── Dot grid ── */
 .dot-grid {

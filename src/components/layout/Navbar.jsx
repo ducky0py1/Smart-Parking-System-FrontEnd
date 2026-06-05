@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Zap, LogOut, User, LayoutDashboard, AlertTriangle } from 'lucide-react';
-import { useWallet } from '../hooks/useWallet';
-import { useDebt } from '../hooks/useDebt';
-import { useTheme } from '../context/ThemeContext';
-import ThemeToggle from './ui/ThemeToggle';
+import { useWallet } from '../../hooks/useWallet';
+import { useDebt } from '../../hooks/useDebt';
+import { useTheme } from '../../context/ThemeContext';
+import ThemeToggle from '../ui/ThemeToggle';
 
 export default function Navbar({ transparent = false }) {
   const { token, shortAddress, logout } = useWallet();
@@ -20,7 +20,6 @@ export default function Navbar({ transparent = false }) {
   }, []);
 
   const solid = !transparent || scrolled;
-  const isLight = theme === 'light';
 
   return (
     <nav style={{
@@ -76,12 +75,10 @@ export default function Navbar({ transparent = false }) {
 
       {/* Right side */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {/* Theme toggle — always visible */}
         <ThemeToggle />
 
         {token ? (
           <>
-            {/* Debt badge */}
             {debt > 0 && (
               <button onClick={() => navigate('/dashboard')} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
@@ -95,7 +92,6 @@ export default function Navbar({ transparent = false }) {
               </button>
             )}
 
-            {/* Address chip */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '5px 12px', borderRadius: 8,
@@ -105,7 +101,6 @@ export default function Navbar({ transparent = false }) {
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted)' }}>{shortAddress}</span>
             </div>
 
-            {/* Logout */}
             <button onClick={logout} title="Déconnexion" style={{
               padding: 8, borderRadius: 8,
               background: 'transparent', border: '1px solid var(--border)',
