@@ -68,9 +68,6 @@
   --stat-section:  rgba(39,101,245,0.04);
   --footer-bg:     rgba(6,14,26,0.9);
   --cta-bg:        linear-gradient(145deg, rgba(39,101,245,0.12) 0%, rgba(11,193,244,0.06) 50%, rgba(8,21,37,0.98) 100%);
-  --login-left-bg: linear-gradient(160deg, rgba(39,101,245,0.10), rgba(3,8,15,0.98));
-  --login-card-border: rgba(244,100,11,0.25);
-  --login-card-shadow: rgba(244,100,11,0.07);
   --shadow-color:  rgba(0,0,0,0.5);
 }
 
@@ -115,9 +112,6 @@
   --stat-section:  rgba(39,101,245,0.03);
   --footer-bg:     rgba(228,240,251,0.95);
   --cta-bg:        linear-gradient(145deg, rgba(39,101,245,0.07) 0%, rgba(11,193,244,0.04) 50%, rgba(255,255,255,0.98) 100%);
-  --login-left-bg: linear-gradient(160deg, rgba(39,101,245,0.06), rgba(240,247,255,0.98));
-  --login-card-border: rgba(244,100,11,0.30);
-  --login-card-shadow: rgba(244,100,11,0.04);
   --shadow-color:  rgba(39,101,245,0.10);
 }
 

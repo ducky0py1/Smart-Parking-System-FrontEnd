@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Wallet, MapPin, Coins, Car, ShieldCheck, Zap,
@@ -6,34 +7,33 @@ import {
   TrendingUp, Activity, AlertTriangle, Box, Lock,
   Github, Linkedin,
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import ParkingScene3D from '../components/three/ParkingScene3D';
 import './home.css';
-
+import logo from '../components/ui/logo.png'
 // ── Shared animation presets ──────────────────────────────────
 const EASE = [0.22, 1, 0.36, 1];
 
 function heroAnim(delay = 0) {
   return {
-    initial:    { opacity: 0, y: 34 },
-    animate:    { opacity: 1, y: 0 },
+    initial: { opacity: 0, y: 34 },
+    animate: { opacity: 1, y: 0 },
     transition: { duration: 0.8, delay, ease: EASE },
   };
 }
 
 function revealAnim(delay = 0) {
   return {
-    initial:    { opacity: 0, y: 34 },
+    initial: { opacity: 0, y: 34 },
     whileInView: { opacity: 1, y: 0 },
-    viewport:   { once: true, margin: '-10%' },
+    viewport: { once: true, margin: '-10%' },
     transition: { duration: 0.8, delay, ease: EASE },
   };
 }
 
 // ── Count-up component ────────────────────────────────────────
 function CountUp({ target, dec = 0, suffix = '' }) {
-  const ref       = useRef(null);
+  const ref = useRef(null);
   const triggered = useRef(false);
   const [val, setVal] = useState('0');
 
@@ -45,12 +45,12 @@ function CountUp({ target, dec = 0, suffix = '' }) {
       ([entry]) => {
         if (!entry.isIntersecting || triggered.current) return;
         triggered.current = true;
-        const dur   = 1600;
+        const dur = 1600;
         const start = performance.now();
-        const tick  = (now) => {
-          const t      = Math.min(1, (now - start) / dur);
-          const eased  = 1 - Math.pow(1 - t, 3);
-          const n      = target * eased;
+        const tick = (now) => {
+          const t = Math.min(1, (now - start) / dur);
+          const eased = 1 - Math.pow(1 - t, 3);
+          const n = target * eased;
           setVal(
             n.toLocaleString('fr-FR', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suffix
           );
@@ -71,18 +71,20 @@ function CountUp({ target, dec = 0, suffix = '' }) {
 function BrandMark({ size = 34 }) {
   return (
     <span className="pc-brand-mark" style={{ width: size, height: size }}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"
-           strokeLinecap="round" strokeLinejoin="round" style={{ width: size * 0.59, height: size * 0.59 }}>
+      {/* <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"
+        strokeLinecap="round" strokeLinejoin="round" style={{ width: size * 0.59, height: size * 0.59 }}>
         <rect x="3" y="3" width="18" height="18" rx="3" />
         <path d="M9 17V7h4a3 3 0 0 1 0 6H9" />
-      </svg>
+      </svg> */}
+      <span className='logo'><img src={logo} alt='logo'/></span>
+      
     </span>
   );
 }
 
 // ── Main component ────────────────────────────────────────────
 export default function Home() {
-  const { connectWallet } = useAuth();
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
   const [navScrolled, setNavScrolled] = useState(false);
@@ -130,7 +132,7 @@ export default function Home() {
         <div className="pc-nav-inner">
           <a className="pc-brand" href="#top">
             <BrandMark />
-            ParkChain
+            SmartPark
           </a>
 
           <div className="pc-nav-links">
@@ -147,9 +149,9 @@ export default function Home() {
             <button className="pc-theme-toggle" onClick={toggleTheme} aria-label="Changer de thème">
               {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
             </button>
-            <button className="pc-btn pc-btn-wallet" onClick={connectWallet}>
+            <button className="pc-btn pc-btn-wallet" onClick={() => navigate('/login')}>
               <Wallet size={18} />
-              Connecter le Wallet
+              Se connecter
             </button>
           </div>
         </div>
@@ -162,10 +164,10 @@ export default function Home() {
         <header className="pc-hero">
           <div className="pc-container">
 
-            <motion.span className="pc-eyebrow" {...heroAnim(0)}>
+            {/* <motion.span className="pc-eyebrow" {...heroAnim(0)}>
               <span className="pc-dot" />
               Stationnement décentralisé · Web3
-            </motion.span>
+            </motion.span> */}
 
             <motion.h1 {...heroAnim(0.08)}>
               Garez-vous en un clic.
@@ -174,19 +176,19 @@ export default function Home() {
             </motion.h1>
 
             <motion.p className="pc-lead" {...heroAnim(0.16)}>
-              ParkChain réinvente le stationnement urbain : repérez une place libre en temps
+              SmartPark réinvente le stationnement urbain : repérez une place libre en temps
               réel sur une carte 3D vivante, réservez instantanément et réglez en ETH.
               Sans ticket, sans file d'attente, sans intermédiaire.
             </motion.p>
 
             <motion.div className="pc-hero-cta" {...heroAnim(0.24)}>
-              <button className="pc-btn pc-btn-wallet pc-btn-lg" onClick={connectWallet}>
+              <button className="pc-btn pc-btn-wallet pc-btn-lg" onClick={() => navigate('/login')}>
                 <Wallet size={18} />
-                Connecter le Wallet
+                Se connecter
               </button>
               <a href="#carte" className="pc-btn pc-btn-ghost pc-btn-lg">
                 <Box size={18} />
-                Explorer la carte 3D
+               Voir la carte 3D
               </a>
             </motion.div>
 
@@ -243,9 +245,9 @@ export default function Home() {
             <div className="pc-steps">
               {[
                 { icon: <Wallet size={24} />, num: '01', title: 'Connectez votre wallet', body: "Liez MetaMask en un instant. Votre identité est vérifiée, aucun mot de passe à retenir." },
-                { icon: <MapPin  size={24} />, num: '02', title: 'Repérez une place',      body: "La carte 3D affiche en direct les places libres. Filtrez par distance, prix ou type de véhicule." },
-                { icon: <Coins  size={24} />, num: '03', title: 'Payez en ETH',            body: "Le tarif et l’éventuelle dette s’additionnent automatiquement. Une signature, et c’est réglé." },
-                { icon: <Car    size={24} />, num: '04', title: 'Stationnez sereinement',  body: "Votre place est garantie et vérifiée par capteur. Le reçu est gravé dans la blockchain.", last: true },
+                { icon: <MapPin size={24} />, num: '02', title: 'Repérez une place', body: "La carte 3D affiche en direct les places libres. Filtrez par distance, prix ou type de véhicule." },
+                { icon: <Coins size={24} />, num: '03', title: 'Payez en ETH', body: "Le tarif et l’éventuelle dette s’additionnent automatiquement. Une signature, et c’est réglé." },
+                { icon: <Car size={24} />, num: '04', title: 'Stationnez sereinement', body: "Votre place est garantie et vérifiée par capteur. Le reçu est gravé dans la blockchain.", last: true },
               ].map(({ icon, num, title, body, last }, i) => (
                 <motion.div key={num} className="pc-step pc-glass" {...revealAnim(i * 0.08)}>
                   {!last && <div className="pc-step-line" />}
@@ -270,12 +272,12 @@ export default function Home() {
 
             <div className="pc-features">
               {[
-                { cls: 'pc-c-cyan',   icon: <Box            size={26} />, title: 'Carte 3D temps réel',         body: "Chaque place est un objet 3D interactif. Visualisez l'occupation niveau par niveau, en direct.",         chips: ['Three.js', 'WebGL', 'Live'] },
-                { cls: 'pc-c-orange', icon: <ShieldCheck    size={26} />, title: 'Paiement blockchain',         body: "Réglez en ETH via MetaMask. Transactions transparentes, immuables et sans frais cachés.",              chips: ['MetaMask', 'Ethereum', 'Smart contract'] },
-                { cls: 'pc-c-pink',   icon: <Radio          size={26} />, title: 'Capteurs IoT intelligents',   body: "Des capteurs détectent l'arrivée et le départ des véhicules, mettant la carte à jour à la seconde.", chips: ['IoT', 'Détection'] },
-                { cls: 'pc-c-green',  icon: <Zap            size={26} />, title: 'Réservation instantanée',     body: "Bloquez une place avant même d'arriver. Plus de tours de pâté de maisons, plus de stress.",            chips: ['Temps réel', '< 10 s'] },
-                { cls: 'pc-c-cyan',   icon: <LayoutDashboard size={26} />, title: 'Tableau de bord exploitant', body: "Revenus, taux d'occupation, alertes capteurs : pilotez votre parking depuis des KPIs en direct.",    chips: ['Analytics', 'Admin'] },
-                { cls: 'pc-c-orange', icon: <Lock           size={26} />, title: 'Sécurité & transparence',     body: "Chaque réservation et chaque paiement sont traçables et infalsifiables sur la chaîne.",              chips: ['Immuable', 'Auditable'] },
+                { cls: 'pc-c-cyan', icon: <Box size={26} />, title: 'Carte 3D temps réel', body: "Chaque place est un objet 3D interactif. Visualisez l'occupation niveau par niveau, en direct.", chips: ['Three.js', 'WebGL', 'Live'] },
+                { cls: 'pc-c-orange', icon: <ShieldCheck size={26} />, title: 'Paiement blockchain', body: "Réglez en ETH via MetaMask. Transactions transparentes, immuables et sans frais cachés.", chips: ['MetaMask', 'Ethereum', 'Smart contract'] },
+                { cls: 'pc-c-pink', icon: <Radio size={26} />, title: 'Capteurs IoT intelligents', body: "Des capteurs détectent l'arrivée et le départ des véhicules, mettant la carte à jour à la seconde.", chips: ['IoT', 'Détection'] },
+                { cls: 'pc-c-green', icon: <Zap size={26} />, title: 'Réservation instantanée', body: "Bloquez une place avant même d'arriver. Plus de tours de pâté de maisons, plus de stress.", chips: ['Temps réel', '< 10 s'] },
+                { cls: 'pc-c-cyan', icon: <LayoutDashboard size={26} />, title: 'Tableau de bord exploitant', body: "Revenus, taux d'occupation, alertes capteurs : pilotez votre parking depuis des KPIs en direct.", chips: ['Analytics', 'Admin'] },
+                { cls: 'pc-c-orange', icon: <Lock size={26} />, title: 'Sécurité & transparence', body: "Chaque réservation et chaque paiement sont traçables et infalsifiables sur la chaîne.", chips: ['Immuable', 'Auditable'] },
               ].map(({ cls, icon, title, body, chips }, i) => (
                 <motion.div key={title} className={`pc-feature pc-glass ${cls}`} {...revealAnim((i % 3) * 0.08)}>
                   <div className="pc-feat-ico">{icon}</div>
@@ -319,7 +321,7 @@ export default function Home() {
                     <span>— véhicule détecté par capteur</span>
                   </div>
                 </div>
-                <button className="pc-btn pc-btn-ghost pc-btn-lg" style={{ marginTop: 30 }} onClick={connectWallet}>
+                <button className="pc-btn pc-btn-ghost pc-btn-lg" style={{ marginTop: 30 }} onClick={() => navigate('/login')}>
                   Ouvrir la carte en direct
                 </button>
               </motion.div>
@@ -329,7 +331,7 @@ export default function Home() {
                 <div className="pc-ph-inner">
                   <div className="pc-ph-ico">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
-                         strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+                      strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
                       <rect x="3" y="3" width="18" height="18" rx="2" />
                       <circle cx="9" cy="9" r="2" />
                       <path d="m21 15-3.5-3.5L9 20" />
@@ -353,7 +355,7 @@ export default function Home() {
               <span className="pc-kicker">Paiement &amp; blockchain</span>
               <h2>Le calcul «&nbsp;tarif + dette&nbsp;», réglé avant la chaîne.</h2>
               <p>
-                ParkChain additionne automatiquement le prix de la place et toute dette impayée,
+                SmartPark additionne automatiquement le prix de la place et toute dette impayée,
                 puis exécute une transaction unique et vérifiable.
               </p>
             </motion.div>
@@ -401,9 +403,9 @@ export default function Home() {
               {/* Transaction flow */}
               <motion.div className="pc-pay-steps" {...revealAnim(0.08)}>
                 {[
-                  { n: '1', title: 'Signature de la transaction',    body: "MetaMask s'ouvre. Vous validez le montant exact, en toute transparence." },
+                  { n: '1', title: 'Signature de la transaction', body: "MetaMask s'ouvre. Vous validez le montant exact, en toute transparence." },
                   { n: '2', title: 'Confirmation sur la blockchain', body: "Le smart contract enregistre le paiement et attend le reçu du réseau." },
-                  { n: '3', title: 'Réservation vérifiée',          body: "Le backend Laravel est notifié et la place vous est définitivement attribuée." },
+                  { n: '3', title: 'Réservation vérifiée', body: "Le backend Laravel est notifié et la place vous est définitivement attribuée." },
                 ].map(({ n, title, body }) => (
                   <div key={n} className="pc-pay-step">
                     <span className="pc-pay-step-num">{n}</span>
@@ -419,9 +421,9 @@ export default function Home() {
         <section className="pc-block" id="reseau">
           <div className="pc-container">
             <motion.div className="pc-section-head" {...revealAnim(0)}>
-              <span className="pc-kicker">Pour les exploitants</span>
+              {/* <span className="pc-kicker">Pour les exploitants</span> */}
               <h2>Pilotez votre réseau de parkings en un coup d'œil.</h2>
-              <p>Un tableau de bord temps réel pour suivre les revenus, l'occupation et la santé de vos capteurs.</p>
+              <p>Un tableau de bord temps réel pour suivre les revenus, l'occupation et la santé des capteurs.</p>
             </motion.div>
 
             <div className="pc-kpis">
@@ -458,7 +460,7 @@ export default function Home() {
               <div className="pc-ph-inner">
                 <div className="pc-ph-ico">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
-                       strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+                    strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <path d="M3 9h18M9 21V9" />
                   </svg>
@@ -480,11 +482,11 @@ export default function Home() {
               <h2>Prêt à révolutionner votre stationnement&nbsp;?</h2>
               <p>Connectez votre wallet et trouvez votre première place en moins de dix secondes.</p>
               <div className="pc-hero-cta pc-cta-cta">
-                <button className="pc-btn pc-btn-wallet pc-btn-lg" onClick={connectWallet}>
+                <button className="pc-btn pc-btn-wallet pc-btn-lg" onClick={() => navigate('/login')}>
                   <Wallet size={18} />
-                  Connecter le Wallet
+                  Se connecter
                 </button>
-                <a href="#comment" className="pc-btn pc-btn-ghost pc-btn-lg">Voir une démo</a>
+                <a href="/login" className="pc-btn pc-btn-ghost pc-btn-lg">Voir une démo</a>
               </div>
             </motion.div>
           </div>
@@ -498,7 +500,7 @@ export default function Home() {
             <div className="pc-foot-brand">
               <a className="pc-brand" href="#top">
                 <BrandMark />
-                ParkChain
+                SmartPark
               </a>
               <p>Le stationnement urbain intelligent, sécurisé par la blockchain. Trouvez, réservez et payez en quelques secondes.</p>
             </div>
@@ -529,7 +531,7 @@ export default function Home() {
           </div>
 
           <div className="pc-foot-bottom">
-            <span>© 2026 ParkChain. Tous droits réservés.</span>
+            <span>© 2026 SmartPark. Tous droits réservés.</span>
             <div className="pc-socials">
               <a href="#" aria-label="X / Twitter">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17">

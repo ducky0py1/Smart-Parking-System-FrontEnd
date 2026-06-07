@@ -21,7 +21,7 @@ export default function LoadingScreen() {
         fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.18em',
         color: 'var(--muted)',
       }}>
-        PARKCHAIN
+        SmartPark
       </div>
       <div style={{
         width: 120, height: 2, borderRadius: 2,
