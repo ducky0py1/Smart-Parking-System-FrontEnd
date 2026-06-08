@@ -4,9 +4,9 @@ import * as THREE from 'three';
 
 // Neon palette — mirrors the CSS design tokens
 const COLORS = {
-  green: new THREE.Color('#ff9a3c'), // libre — neon orange
-  cyan:  new THREE.Color('#a85cff'), // réservée — neon purple
-  pink:  new THREE.Color('#ff4f9a'), // occupée — neon pink
+  green: new THREE.Color('#7aff3c'), // libre — neon orange
+  cyan:  new THREE.Color('#ffe95c'), // réservée — neon purple
+  pink:  new THREE.Color('#ff4f61'), // occupée — neon pink
 };
 
 const CAR_NEUTRAL = [0xf3f5fb, 0xe8edf7, 0xd9e2f0, 0x9aa6c4, 0x4a5170];

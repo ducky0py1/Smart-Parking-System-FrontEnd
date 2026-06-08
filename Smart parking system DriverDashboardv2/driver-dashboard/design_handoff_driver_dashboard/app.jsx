@@ -36,6 +36,9 @@ function App() {
   const [activeResv, setActiveResv] = useState(null);
   const [history, setHistory] = useState(window.SP.history);
   const [toasts, setToasts] = useState([]);
+  // first-login welcome guide — show once the profile is set, never seen before.
+  // TODO(Claude Code): gate on a backend per-user flag (user.onboarded_at) instead of localStorage.
+  const [showGuide, setShowGuide] = useState(() => !localStorage.getItem("pc-onboarded") && !!window.SP.user.email);
 
   /* ---- theme: reflect to <html data-theme> + persist ---- */
   useEffect(() => {
@@ -72,6 +75,14 @@ function App() {
     window.SP.user.firstName = form.firstName; window.SP.user.lastName = form.lastName; window.SP.user.email = form.email;
     setShowProfile(false);
     pushToast({ kind: "success", title: "Profil complété", sub: "Bienvenue, " + form.firstName + " !", ttl: 3200 });
+    // first login → show the welcome guide right after onboarding the profile
+    if (!localStorage.getItem("pc-onboarded")) setShowGuide(true);
+  }
+
+  /* ---- welcome guide ---- */
+  function closeGuide() {
+    localStorage.setItem("pc-onboarded", "1"); // TODO(Claude Code): PATCH /me { onboarded: true }
+    setShowGuide(false);
   }
 
   /* ---- reservation / payment ---- */
@@ -168,6 +179,7 @@ function App() {
       {/* overlays */}
       <ToastStack toasts={toasts} />
       {showProfile && <ProfileModal onComplete={completeProfile} />}
+      {!showProfile && showGuide && <WelcomeGuide name={profile.firstName} onClose={closeGuide} />}
       {payingSpot && <PaymentModal spot={payingSpot} debt={debt} onClose={() => setPayingSpot(null)} onConfirmed={onConfirmed} />}
 
       {/* hide overlay panels via tweak */}

@@ -518,6 +518,124 @@ table.history tbody tr:hover { background: var(--surface); }
 .switch.on::after { transform: translateX(19px); background: oklch(0.99 0.01 288); }
 
 /* ============================================================
+   First-login Welcome Guide
+   ============================================================ */
+.guide-scrim {
+  position: fixed; inset: 0; z-index: 240;
+  display: grid; place-items: center; padding: 24px;
+  background: oklch(0.1 0.02 288 / 0.66);
+  backdrop-filter: blur(10px);
+  animation: gScrimIn 0.4s var(--ease);
+}
+.guide-scrim.leaving { animation: gScrimOut 0.28s var(--ease) forwards; }
+@keyframes gScrimIn { from { backdrop-filter: blur(0); background: oklch(0.1 0.02 288 / 0); } }
+@keyframes gScrimOut { to { opacity: 0; } }
+
+.guide-card {
+  width: 100%; max-width: 460px; position: relative; overflow: hidden;
+  border-radius: 24px; border: 1px solid var(--border-2);
+  background: var(--surface-2);
+  backdrop-filter: blur(28px) saturate(1.3);
+  box-shadow: 0 44px 130px oklch(0 0 0 / 0.6);
+  animation: gCardIn 0.5s var(--ease);
+}
+@keyframes gCardIn { from { transform: translateY(22px) scale(0.96); } }
+
+.guide-skip {
+  position: absolute; top: 15px; right: 16px; z-index: 4;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 11px; border-radius: 999px;
+  background: oklch(1 0 0 / 0.06); border: 1px solid var(--border-2);
+  color: var(--muted); font-family: inherit; font-size: 12.5px; font-weight: 500;
+  transition: 0.2s;
+}
+.guide-skip:hover { color: var(--text); background: oklch(1 0 0 / 0.1); }
+.guide-skip svg { width: 13px; height: 13px; }
+
+/* visual header */
+.guide-visual {
+  position: relative; height: 188px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--bg) 55%, transparent) 0%, transparent 100%),
+    var(--surface);
+}
+.guide-visual .gv-glow {
+  position: absolute; inset: -40% 20% auto; height: 220px; border-radius: 50%;
+  filter: blur(56px); opacity: calc(0.5 * var(--glow-strength));
+}
+.accent-cyan   .gv-glow { background: var(--neon-cyan); }
+.accent-green  .gv-glow { background: var(--neon-green); }
+.accent-orange .gv-glow { background: var(--metamask); }
+.accent-pink   .gv-glow { background: var(--neon-pink); }
+
+.gv-brand { position: relative; }
+.gv-mark {
+  width: 76px; height: 76px; border-radius: 22px; display: grid; place-items: center;
+  background: linear-gradient(140deg, var(--neon-cyan), var(--neon-green));
+  color: oklch(0.99 0.02 300);
+  box-shadow: 0 14px 44px oklch(0.62 0.27 300 / calc(0.6 * var(--glow-strength)));
+  animation: gPop 0.6s var(--ease);
+}
+.gv-mark svg { width: 40px; height: 40px; }
+@keyframes gPop { from { transform: scale(0.7); } }
+
+.gv-ico {
+  position: relative; width: 84px; height: 84px; border-radius: 22px;
+  display: grid; place-items: center; color: var(--text);
+  background: var(--surface-2); border: 1px solid var(--border-2);
+  box-shadow: 0 14px 40px oklch(0 0 0 / 0.32);
+  animation: gPop 0.55s var(--ease);
+}
+.accent-green  .gv-ico { color: var(--neon-green); }
+.accent-orange .gv-ico { color: var(--metamask); }
+.accent-pink   .gv-ico { color: var(--neon-pink); }
+.accent-cyan   .gv-ico { color: var(--neon-cyan); }
+
+.gv-legend {
+  position: relative; display: flex; gap: 16px; margin-top: 18px;
+  font-size: 12.5px; color: var(--muted);
+}
+.gv-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.gv-legend i { width: 9px; height: 9px; border-radius: 50%; }
+
+.guide-body { padding: 24px 28px 8px; }
+.guide-eyebrow {
+  font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-weight: 600; color: var(--neon-cyan);
+}
+.accent-green  + .guide-body .guide-eyebrow { color: var(--neon-green); }
+.accent-orange + .guide-body .guide-eyebrow { color: var(--metamask); }
+.accent-pink   + .guide-body .guide-eyebrow { color: var(--neon-pink); }
+.guide-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 23px;
+  letter-spacing: -0.01em; margin-top: 12px; line-height: 1.18; text-wrap: balance;
+}
+.guide-title .gt-hi { display: block; font-size: 15px; font-weight: 500; color: var(--muted); font-family: var(--font-body); margin-bottom: 5px; }
+.guide-text { color: var(--muted); font-size: 14.5px; line-height: 1.6; margin-top: 11px; }
+
+.guide-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 20px 28px 26px; flex-wrap: wrap;
+}
+.guide-dots { display: flex; gap: 8px; }
+.guide-dots .gd {
+  width: 8px; height: 8px; border-radius: 999px; padding: 0;
+  background: var(--surface-2); border: 1px solid var(--border-2); cursor: pointer;
+  transition: 0.25s var(--ease);
+}
+.guide-dots .gd.on { width: 24px; background: var(--neon-cyan); border-color: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.guide-actions { display: flex; gap: 9px; margin-left: auto; }
+
+@media (max-width: 520px) {
+  .guide-visual { height: 150px; }
+  .guide-foot { padding: 18px 22px 22px; }
+  .guide-body { padding: 20px 22px 6px; }
+}
+
+/* ============================================================
    Skeletons (loading)
    ============================================================ */
 .skel { background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%); background-size: 220% 100%; animation: shimmer 1.4s linear infinite; border-radius: 8px; }

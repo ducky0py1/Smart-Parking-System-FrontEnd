@@ -116,6 +116,20 @@ The shell is a **left sidebar + top bar + content area**. Four primary views swi
 - **Notifications**: three toggle switches (transactions / rappels / actualités).
 - **Réseau & wallet**: network pill, connected wallet (MetaMask badge), **Déconnecter** button.
 
+### First-login Welcome Guide (`onboarding.jsx` → `WelcomeGuide`)
+- A **floating, stepped pop-up shown ONCE on first login**, right after the profile is completed.
+  Persisted via `localStorage['pc-onboarded']` in the prototype.
+- **4 steps** (copy/order in `SP_GUIDE_STEPS`): a glass card with a colored visual header (glow +
+  brand mark or feature icon), an accent-colored eyebrow, a display title, body copy, expanding-dot
+  pagination, and Précédent / Suivant → Commencer + a top-right "Passer" (skip).
+  1. **Hero** — greets the user by first name and states the one-line goal: **« Garez-vous sans stress. »**
+  2. **La carte 3D** (green) — explains the live 3D map + the color legend (orange/violet/rose).
+  3. **Réservez & payez** (orange) — duration + day/night tarif + MetaMask.
+  4. **Minuteur, portefeuille & historique** (pink) — session timer, balance, debt, on-chain history.
+- Closing (Commencer / Passer / backdrop) marks it seen and never shows again for that user.
+- **TODO(Claude Code):** gate on a backend per-user flag (e.g. `user.onboarded_at`) instead of
+  localStorage; persist via `PATCH /me { onboarded: true }` in `closeGuide()` (see `app.jsx`).
+
 ### Modal A — Profile completion (`modals.jsx` → `ProfileModal`)
 - **Non-dismissible.** Shown on entry whenever `user.email` (or first name) is missing — no close button,
   no backdrop-click dismiss. Cannot be escaped until valid.
@@ -183,6 +197,7 @@ Map these prototype `useState`s (in `app.jsx`) to your Context/store:
 - `activeResv { id, label, durationMin, startTime, price, txHash }` → active session.
 - `history[]` → fetched from `GET /reservations/history`.
 - `payingSpot` → which spot the PaymentModal is for (null = closed).
+- `showGuide` → first-login WelcomeGuide visibility (gate on a backend `onboarded` flag in production).
 - `toasts[]` → your toast/notification system.
 
 ---
@@ -260,6 +275,7 @@ Reservation payload shape to standardize on:
 - `mock-backend.js` — **the integration contract.** Replace bodies, keep signatures.
 - `icons.jsx` — inline SVG icon set.
 - `shell.jsx` — Sidebar, Topbar, Toasts.
+- `onboarding.jsx` — WelcomeGuide (first-login 4-step tour).
 - `modals.jsx` — ProfileModal, PaymentModal.
 - `map-view.jsx` — MapView + ActiveReservationCard.
 - `views.jsx` — HistoryView, WalletView, SettingsView.

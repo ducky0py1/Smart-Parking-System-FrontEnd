@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
   // Rehydrate session on mount
   useEffect(() => {
     if (!token) return;
-    api.get('/auth/me')
+    api.get('/user')
       .then(({ data }) => setUser(data))
       .catch(() => logout());
   }, []); // eslint-disable-line
@@ -71,9 +71,10 @@ export function AuthProvider({ children }) {
 
   const updateProfile = useCallback(async (data) => {
     try {
-      const { data: updated } = await api.put('/auth/profile', data);
+      // Backend: POST /user/update → { message, user }
+      const { data: resp } = await api.post('/user/update', data);
+      const updated = resp?.user ?? resp;
       setUser(updated);
-      toast('Profil mis à jour !', 'success');
       return updated;
     } catch (err) {
       const msg = err?.response?.data?.message || 'Erreur lors de la mise à jour';

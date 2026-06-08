@@ -20,7 +20,7 @@ export function ParkingProvider({ children }) {
 
   const refreshSpots = useCallback(async () => {
     try {
-      const { data } = await api.get('/parking-spots');
+      const { data } = await api.get('/spots');
       setSpots(Array.isArray(data) ? data : data.data ?? []);
     } catch (err) {
       // Silent fail on poll — don't spam toasts

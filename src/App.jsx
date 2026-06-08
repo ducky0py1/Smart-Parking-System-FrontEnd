@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import DriverDashboard from './pages/driver/DriverDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import ProfileCompletion from './pages/shared/ProfileCompletion';
 import LoadingScreen from './components/ui/LoadingScreen';
 
 function App() {
@@ -28,32 +27,27 @@ function App() {
     );
   }
 
-  // 3. PROFILE COMPLETION CHECK (Driver Only)
-  const isProfileIncomplete = user && user.role === 'driver' && (!user.first_name || !user.email);
-  if (isProfileIncomplete) {
-    return <ProfileCompletion />;
+  // 3. ROLE-BASED ROUTING (authenticated)
+  // Admin gets the shared navbar layout; driver dashboard is self-contained full-screen.
+  if (user?.role === 'admin') {
+    return (
+      <div className="app-container">
+        <Navbar />
+        <main className="content">
+          <Routes>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="*"     element={<Navigate to="/admin" replace />} />
+          </Routes>
+        </main>
+      </div>
+    );
   }
 
-  // 4. ROLE-BASED ROUTING (authenticated)
   return (
-    <div className="app-container">
-      <Navbar />
-      <main className="content">
-        <Routes>
-          {user?.role === 'admin' ? (
-            <>
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="*"      element={<Navigate to="/admin" replace />} />
-            </>
-          ) : (
-            <>
-              <Route path="/dashboard" element={<DriverDashboard />} />
-              <Route path="*"          element={<Navigate to="/dashboard" replace />} />
-            </>
-          )}
-        </Routes>
-      </main>
-    </div>
+    <Routes>
+      <Route path="/dashboard" element={<DriverDashboard />} />
+      <Route path="*"          element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   );
 }
 
