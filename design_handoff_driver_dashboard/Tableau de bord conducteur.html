@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ParkChain — Tableau de bord conducteur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="base.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<style>
+  /* page-level resets specific to the dashboard (overrides home-page body bg layering) */
+  html, body { overflow: hidden; height: 100%; }
+  body { overflow-y: auto; }
+  /* error toast accent (base.css only defines pending/success) */
+  .toast.error .ts-ico { color: var(--neon-pink); background: oklch(0.67 0.28 352 / 0.18); }
+  .toast-wrap { top: 84px; }
+  /* loader */
+  #boot { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; background: var(--bg); transition: opacity 0.6s var(--ease); }
+  #boot.gone { opacity: 0; pointer-events: none; }
+  #boot .loader-mark { display: flex; flex-direction: column; align-items: center; gap: 18px; color: var(--muted); font-family: var(--font-body); letter-spacing: 0.18em; font-size: 12px; text-transform: uppercase; }
+  #boot .loader-ring { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--border-2); border-top-color: var(--neon-cyan); animation: spin 0.9s linear infinite; }
+</style>
+</head>
+<body>
+  <div id="boot"><div class="loader-mark"><div class="loader-ring"></div><span>Chargement du tableau de bord</span></div></div>
+  <div id="root"></div>
+
+  <!-- Three.js r128 + OrbitControls (damped → smooth zoom) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- React + Babel (pinned) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- vanilla modules -->
+  <script src="mock-backend.js"></script>
+  <script src="parking-map-3d.js"></script>
+
+  <!-- React layers -->
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="icons.jsx"></script>
+  <script type="text/babel" src="shell.jsx"></script>
+  <script type="text/babel" src="modals.jsx"></script>
+  <script type="text/babel" src="map-view.jsx"></script>
+  <script type="text/babel" src="views.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
