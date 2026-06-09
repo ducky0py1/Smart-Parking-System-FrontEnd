@@ -14,11 +14,9 @@
 //  NOTE FOR CLAUDE CODE: feed useParking().spots into updateSpots().
 // ============================================================
 (function () {
-  // ParkChain neon status palette (CSS for labels/legend parity)
-  const STATUS_CSS = { free: "#ff9a3c", reserved: "#a85cff", occupied: "#ff4f9a" };
-  // deeper, more saturated tones for the 3D pads (survive ACES tone-mapping
-  // without clipping to cream the way bright warm colours do)
-  const STATUS_HEX = { free: 0xe86a0c, reserved: 0x7d2fe0, occupied: 0xe01f6e };
+  // Status palette — kept in sync with ParkingScene3D.jsx
+  const STATUS_CSS = { free: "#7aff3c", reserved: "#ffe95c", occupied: "#ff4f61" };
+  const STATUS_HEX = { free: 0x7aff3c, reserved: 0xffe95c, occupied: 0xff4f61 };
 
   // ─── Lot geometry (matches the uploaded layout) ───────
   const SPOT_W = 2.5, SPOT_D = 5.0, LANE_W = 5.5;
@@ -161,7 +159,7 @@
     function emissiveFor(s) {
       if (s.selected) return 0.55;
       if (s.hover) return 0.62;
-      return s.status === "occupied" ? 0.22 : s.status === "reserved" ? 0.32 : 0.4;
+      return s.status === "occupied" ? 0.65 : s.status === "reserved" ? 0.75 : 0.88;
     }
     function makeSpotMesh(s) {
       const col = spotColor(s);
@@ -511,7 +509,7 @@
       if (!reduced) {
         pt += 0.05;
         spotById.forEach((s) => {
-          if (s.hover && s.status === "free") s.mesh.material.emissiveIntensity = Math.sin(pt) * 0.12 + 0.6;
+          if (s.hover && s.status === "free") s.mesh.material.emissiveIntensity = Math.sin(pt) * 0.12 + 0.92;
         });
       }
       renderer.render(scene, camera);

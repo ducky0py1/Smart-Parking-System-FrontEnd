@@ -4,19 +4,19 @@ import * as THREE from 'three';
 
 // Neon palette — mirrors the CSS design tokens
 const COLORS = {
-  green: new THREE.Color('#7aff3c'), // libre — neon orange
-  cyan:  new THREE.Color('#ffe95c'), // réservée — neon purple
-  pink:  new THREE.Color('#ff4f61'), // occupée — neon pink
+  green: new THREE.Color('#8bf55a'), // libre — green
+  cyan: new THREE.Color('#fdde10'), // réservée — 
+  pink: new THREE.Color('#d4081c'), // occupée — 
 };
 
-const CAR_NEUTRAL = [0xf3f5fb, 0xe8edf7, 0xd9e2f0, 0x9aa6c4, 0x4a5170];
-const CAR_COLORED = [0x8a4ff0, 0xff4f9a, 0xf3892f, 0x29b6cf, 0xe23c5e, 0x3d6bff, 0xb14bff];
+const CAR_NEUTRAL = [0xf3f5fb,0x4a5170, 0xe8edf7, 0xd9e2f0, 0x9aa6c4, 0x4a5170];
+const CAR_COLORED = [0x8a4ff0, 0xff4f9a, 0xf3892f, 0xff4f9a, 0x29b6cf, 0xe23c5e, 0x3d6bff, 0xb14bff, 0xff4f9a, 0xff4f9a];
 
 // 3-keyframe camera path driven by scroll progress
 const CAM_PATH = {
-  from: { pos: new THREE.Vector3(0.5,  5.5, 34), look: new THREE.Vector3(0,   1.5,   4) },
-  mid:  { pos: new THREE.Vector3(-15, 12,  18), look: new THREE.Vector3(0,   0.5,  -6) },
-  to:   { pos: new THREE.Vector3(13,  30,   2), look: new THREE.Vector3(-1,  0,   -22) },
+  from: { pos: new THREE.Vector3(0.5, 5.5, 34), look: new THREE.Vector3(0, 1.5, 4) },
+  mid: { pos: new THREE.Vector3(-15, 12, 18), look: new THREE.Vector3(0, 0.5, -6) },
+  to: { pos: new THREE.Vector3(13, 30, 2), look: new THREE.Vector3(-1, 0, -22) },
 };
 
 function easeInOut(x) {
@@ -28,9 +28,9 @@ function radialTexture() {
   c.width = c.height = 128;
   const ctx = c.getContext('2d');
   const grd = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grd.addColorStop(0,    'rgba(255,255,255,1)');
+  grd.addColorStop(0, 'rgba(255,255,255,1)');
   grd.addColorStop(0.35, 'rgba(255,255,255,0.55)');
-  grd.addColorStop(1,    'rgba(255,255,255,0)');
+  grd.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, 128, 128);
   return new THREE.CanvasTexture(c);
@@ -49,9 +49,9 @@ function makeCar(accentColor) {
     emissiveIntensity: colored ? 0.22 : 0,
   });
   const glass = new THREE.MeshStandardMaterial({ color: 0x2c3654, metalness: 0.55, roughness: 0.12, transparent: true, opacity: 0.92 });
-  const trim  = new THREE.MeshStandardMaterial({ color: 0x232a42, metalness: 0.6,  roughness: 0.45 });
-  const tire  = new THREE.MeshStandardMaterial({ color: 0x14182a, roughness: 0.85, metalness: 0.1 });
-  const hub   = new THREE.MeshStandardMaterial({ color: 0xcfd6e8, metalness: 0.8,  roughness: 0.3 });
+  const trim = new THREE.MeshStandardMaterial({ color: 0x232a42, metalness: 0.6, roughness: 0.45 });
+  const tire = new THREE.MeshStandardMaterial({ color: 0x14182a, roughness: 0.85, metalness: 0.1 });
+  const hub = new THREE.MeshStandardMaterial({ color: 0xcfd6e8, metalness: 0.8, roughness: 0.3 });
 
   const L = 3.5, W = 1.64, H = 0.5;
 
@@ -62,11 +62,11 @@ function makeCar(accentColor) {
     return m;
   };
 
-  add(new THREE.BoxGeometry(W,         H,        L      ), paint, 0, 0.46, 0);
-  add(new THREE.BoxGeometry(W * 0.92,  0.14,     L * 0.9), paint, 0, 0.72, 0);
-  add(new THREE.BoxGeometry(W * 1.03,  0.18,     L * 0.94), trim,  0, 0.30, 0);
-  add(new THREE.BoxGeometry(W * 0.86,  0.44,     L * 0.42), glass, 0, 0.92, 0.08);
-  add(new THREE.BoxGeometry(W * 0.8,   0.12,     L * 0.36), paint, 0, 1.15, 0.08);
+  add(new THREE.BoxGeometry(W, H, L), paint, 0, 0.46, 0);
+  add(new THREE.BoxGeometry(W * 0.92, 0.14, L * 0.9), paint, 0, 0.72, 0);
+  add(new THREE.BoxGeometry(W * 1.03, 0.18, L * 0.94), trim, 0, 0.30, 0);
+  add(new THREE.BoxGeometry(W * 0.86, 0.44, L * 0.42), glass, 0, 0.92, 0.08);
+  add(new THREE.BoxGeometry(W * 0.8, 0.12, L * 0.36), paint, 0, 1.15, 0.08);
 
   const hlMat = new THREE.MeshStandardMaterial({ color: 0xfff6dc, emissive: 0xffeebf, emissiveIntensity: 1.3 });
   for (const sx of [-1, 1]) {
@@ -85,11 +85,11 @@ function makeCar(accentColor) {
   g.add(tl);
 
   const wheelGeo = new THREE.CylinderGeometry(0.34, 0.34, 0.26, 18);
-  const hubGeo   = new THREE.CylinderGeometry(0.16, 0.16, 0.28, 12);
+  const hubGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.28, 12);
   const wz = L * 0.31;
   for (const sx of [-1, 1]) {
     for (const sz of [-1, 1]) {
-      const w  = new THREE.Mesh(wheelGeo, tire);
+      const w = new THREE.Mesh(wheelGeo, tire);
       w.rotation.z = Math.PI / 2;
       w.position.set(sx * (W / 2 + 0.01), 0.32, sz * wz);
       g.add(w);
@@ -120,7 +120,7 @@ function buildFloor(lotGroup) {
 }
 
 function buildLot(lotGroup) {
-  const haloTex  = radialTexture();
+  const haloTex = radialTexture();
   const spotData = [];
 
   const cols = 7, rows = 16, cw = 3.2, rd = 4.4, aisle = 4.5;
@@ -229,7 +229,7 @@ function SceneCore({ theme }) {
     const ref = s.current;
     const lt = theme === 'light';
     ref.spots.forEach((sp) => {
-      sp.pad.material.opacity  = lt ? 0.10 : 0.16;
+      sp.pad.material.opacity = lt ? 0.38 : 0.55;
       sp.edge.material.opacity = lt ? 1.00 : 0.85;
     });
     if (ref.lotGroup?.userData.grid) {
@@ -250,7 +250,7 @@ function SceneCore({ theme }) {
   // Mouse parallax
   useEffect(() => {
     const handler = (e) => {
-      s.current.mouseX = (e.clientX / window.innerWidth)  * 2 - 1;
+      s.current.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
       s.current.mouseY = (e.clientY / window.innerHeight) * 2 - 1;
     };
     window.addEventListener('pointermove', handler, { passive: true });
@@ -259,16 +259,16 @@ function SceneCore({ theme }) {
 
   useFrame((state) => {
     const ref = s.current;
-    const t   = state.clock.elapsedTime;
+    const t = state.clock.elapsedTime;
 
-    ref.scrollT  += (ref.targetScroll - ref.scrollT)  * 0.07;
-    ref.tMouseX  += (ref.mouseX       - ref.tMouseX)  * 0.05;
-    ref.tMouseY  += (ref.mouseY       - ref.tMouseY)  * 0.05;
+    ref.scrollT += (ref.targetScroll - ref.scrollT) * 0.07;
+    ref.tMouseX += (ref.mouseX - ref.tMouseX) * 0.05;
+    ref.tMouseY += (ref.mouseY - ref.tMouseY) * 0.05;
 
     if (!ref.reduced && ref.spots.length > 0) {
       ref.spots.forEach((sp) => {
         const pulse = 0.5 + 0.5 * Math.sin(t * 1.4 + sp.phase);
-        const base  = theme === 'light' ? 0.24 : 0.5;
+        const base = theme === 'light' ? 0.45 : 0.65;
         sp.halo.material.opacity = base + pulse * (sp.state === 'green' ? 0.32 : 0.2);
         if (sp.car) sp.car.position.y = Math.sin(t * 0.8 + sp.phase) * 0.04;
       });
@@ -279,11 +279,11 @@ function SceneCore({ theme }) {
     const sc = ref.scrollT;
     if (sc < 0.5) {
       const k = easeInOut(sc / 0.5);
-      ref._p.lerpVectors(CAM_PATH.from.pos,  CAM_PATH.mid.pos,  k);
+      ref._p.lerpVectors(CAM_PATH.from.pos, CAM_PATH.mid.pos, k);
       ref._l.lerpVectors(CAM_PATH.from.look, CAM_PATH.mid.look, k);
     } else {
       const k = easeInOut((sc - 0.5) / 0.5);
-      ref._p.lerpVectors(CAM_PATH.mid.pos,  CAM_PATH.to.pos,  k);
+      ref._p.lerpVectors(CAM_PATH.mid.pos, CAM_PATH.to.pos, k);
       ref._l.lerpVectors(CAM_PATH.mid.look, CAM_PATH.to.look, k);
     }
     ref._p.x += ref.tMouseX * 3;

@@ -103,7 +103,7 @@ export default function MapView({ spots, theme, onSelectSpot, activeResv, onEndS
           <div className="mt-sub">
             {tip.spot.level} · <span className="mt-price">dès {fmtEth(TARIF.day.rate)} ETH/h</span>
           </div>
-          <div className="mt-sub" style={{ color: 'var(--neon-green)' }}>
+          <div className="mt-sub" style={{ color: '#7aff3c' }}>
             Cliquez pour réserver →
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function MapView({ spots, theme, onSelectSpot, activeResv, onEndS
               <div className="map-hint glass-panel">
                 <span className="pin" />
                 Faites pivoter, zoomez, puis cliquez une place{' '}
-                <b style={{ color: 'var(--neon-green)' }}>libre</b> pour réserver
+                <b style={{ color: '#7aff3c' }}>libre</b> pour réserver
               </div>
             )}
 

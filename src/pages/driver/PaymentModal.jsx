@@ -116,7 +116,7 @@ export default function PaymentModal({ spot, debt, onClose, onConfirmed, pushToa
               <p>Disponible immédiatement · capteur vérifié</p>
             </div>
             <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, color: 'var(--neon-green)', fontSize: 13, fontWeight: 600 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, color: '#7aff3c', fontSize: 13, fontWeight: 600 }}>
                 <span className="dot-free" /> Libre
               </div>
             </div>

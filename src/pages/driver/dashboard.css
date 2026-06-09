@@ -96,13 +96,13 @@ body.pc-bg {
 @keyframes dashShimmer    { to   { background-position: -220% 0; } }
 @keyframes dashHueShift   { to   { background-position: 100% 0; } }
 
-/* ── Status dots ── */
+/* ── Status dots — colours kept in sync with parking-map-3d.js STATUS_CSS ── */
 .pc-dashboard .dot-free, .pc-dashboard .dot-resv, .pc-dashboard .dot-occ {
   width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block;
 }
-.pc-dashboard .dot-free { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
-.pc-dashboard .dot-resv { background: var(--neon-cyan);  box-shadow: 0 0 10px var(--neon-cyan); }
-.pc-dashboard .dot-occ  { background: var(--neon-pink);  box-shadow: 0 0 10px var(--neon-pink); }
+.pc-dashboard .dot-free { background: #7aff3c; box-shadow: 0 0 10px #7aff3c; }
+.pc-dashboard .dot-resv { background: #ffe95c; box-shadow: 0 0 10px #ffe95c; }
+.pc-dashboard .dot-occ  { background: #ff4f61; box-shadow: 0 0 10px #ff4f61; }
 
 /* ============================================================
    App shell grid
